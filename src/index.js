@@ -106,7 +106,7 @@ function onFormSubmit(e) {
         return toggleAlertPopup()
     }
 
-    nameSearch = refs.input.value;
+    query = refs.input.value;
 
         fetchPictures()
             .then(images => {
