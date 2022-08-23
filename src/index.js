@@ -3,24 +3,21 @@ import Notiflix from 'notiflix';
 import SimpleLightbox from "simplelightbox";
 import "simplelightbox/dist/simple-lightbox.min.css";
 import axios from 'axios'
+import { refs } from './refs';
+import { markup } from './markup';
 
-const refs = {
-    form: document.querySelector(".search-form"),
-    input: document.querySelector(".input"),
-    buttonSubmit: document.querySelector(".btn-submit"),
-    loadMore: document.querySelector(".load-more"),
-    gallery: document.querySelector(".gallery"),
-};
+
 
 const API_KEY = '29226751-f0ce60e58b224fb7f016bc6a2';
 const BASE_URL = 'https://pixabay.com/api/';
 const perPage = 40;
 let currentPage = 1;
+let nextPage = '';
 let query = refs.input.value;
 let lightbox;
 const totalPages = 500 / perPage;
-refs.loadMore.classList.add("hide");
 
+refs.loadMore.classList.add("hide");
 
 const fetchPictures = async () => {
     try {
@@ -44,24 +41,6 @@ const fetchPictures = async () => {
     }
 };
 
-const markup = img => `<div class="photo-card">
-    <a href="${img.largeImageURL}" class="gallery_link">
-  <img class="gallery-image" src="${img.webformatURL}" alt="${img.tags}" loading="lazy" />
-  <div class="info">
-    <p class="info-item">
-      <b>Likes:</b> ${img.likes}
-    </p>
-    <p class="info-item">
-      <b>Views:</b> ${img.views}
-    </p>
-    <p class="info-item">
-      <b>Comments:</b> ${img.comments}
-    </p>
-    <p class="info-item">
-      <b>Downloads:</b> ${img.downloads}
-    </p>
-  </div>
-</div>` ;
 
 function createMurkup (  { arrayImages, totalHits }) {
     if (currentPage === 1) {
@@ -80,14 +59,17 @@ function renderMarkup(arrayImages) {
 function onFormSubmit(e) {
     e.preventDefault();
     refs.gallery.innerHTML = "";
-    query = refs.input.value;
-    // query;
+    // query = refs.input.value;
     refs.loadMore.classList.add('hide');
+    let inputSearch = refs.input.value.trim();
+    nextPage = inputSearch;
+    currentPage = 1;
 
     fetchPictures()
         .then(images => {
             renderMarkup(images);
             currentPage += 1;
+
         })
         .catch(error => (console.log(error)))
 
@@ -105,8 +87,7 @@ function onFormSubmit(e) {
         refs.buttonLoad.classList.add("hide");
         return toggleAlertPopup()
     }
-
-    query = refs.input.value;
+        query = refs.input.value;
 
         fetchPictures()
             .then(images => {
@@ -122,6 +103,7 @@ function onFormSubmit(e) {
     });
     }
 
+    
 function toggleAlertPopup() {
     if (isAlertVisible) {
         return;
@@ -137,8 +119,3 @@ function toggleAlertPopup() {
 
 refs.form.addEventListener('submit', onFormSubmit);
 refs.loadMore.addEventListener('click', loadMoreBtn)
-
-       
-
-
-
